@@ -51,26 +51,23 @@ hardAnswers = ["mares", "oats", "does", "lambs", "ivy"]
 
 # Prompts the User to choose the difficulty level.
 def get_difficulty():
-    """Returns the difficulty level chosen by the User. The returned value
-    will be 'easy', 'medium' or 'hard'"""
+    """
+    Returns the difficulty level chosen by the User. The returned value
+    will be 'easy', 'medium' or 'hard'
+    Inputs: none.
+    Outputs: level (string) - the difficulty level chosen by the User.
+    """
 
     level = "None"
 
     while level == "None":
-        print # For readability
 
-        level = raw_input("Please select a difficulty level (easy, medium, hard): ")
+        level = raw_input("\nPlease select a difficulty level (easy, medium, hard): ")
         level = level.replace(" ", "") # Remove any whitespace
 
-        if level.lower() == "easy": # Ignore case
+        if level.lower() in ("easy", "medium", "hard"): # Ignore case
             print "You've chosen " + level + "! Good luck!"
-            return "easy"
-        elif level.lower() == "medium":
-            print "You've chosen " + level + "! Good luck!"
-            return "medium"
-        elif level.lower() == "hard":
-            print "You've chosen " + level + "! Good luck!"
-            return "hard"
+            return level
         else:
             print "Opps! Try again..."
             level = "None"
@@ -78,15 +75,18 @@ def get_difficulty():
 
 # Prompts the User to provide the number of guesses allowed during the game.
 def get_guesses():
-    """Return the number of guesses, as a positive integer, that the User
-    has selected."""
+    """
+    Return the number of guesses, as a positive integer, that the User
+    has selected.
+    Inputs: none.
+    Outputs: guesses (int) - number of guesses chosen by the User.
+    """
 
     guesses = ""
 
     while type(guesses) != int:
-        print # For readability
 
-        print "How many guesses you would like per blank word?"
+        print "\nHow many guesses you would like per blank word?"
 
         try:
             guesses = int(raw_input("Please enter a positive integer: "))
@@ -97,21 +97,22 @@ def get_guesses():
             print "Opps! Try again..."
             guesses = ""
         else:
-            print "Wow! You will have " + str(guesses) + " guesses per blank word."
-            print
+            print "Wow! You will have " + str(guesses) + " guesses per blank word.\n"
             return guesses
 
 
 # Prompts the User to provide the answer for the numbered blank word.
 def get_answer(blankNum):
-    """Return a word that represents the User's guess at the numbered
-    blank word."""
+    """
+    Return a word that represents the User's guess at the numbered
+    blank word.
+    Inputs: blankNum (int) - index relating to current answer in question.
+    Outputs: answer (string) - The User's current guess.
+    """
 
     blankNum += 1 # Otherwise we start at zero instead of 1
 
-    print # For readability
-
-    answer = raw_input("Please enter your answer for __" + str(blankNum) + "__? ")
+    answer = raw_input("\nPlease enter your answer for ___" + str(blankNum) + "___? ")
     answer = answer.replace(" ", "") # Remove any whitespace
 
     return answer
@@ -119,8 +120,15 @@ def get_answer(blankNum):
 
 # Set the correct quiz content based on the User's input
 def set_content(difficulty):
-    """Returns correct quiz content and answers based on the User's prior
-    input of difficulty level."""
+    """
+    Returns correct quiz content and answers based on the User's prior
+    input of difficulty level.
+    Inputs: difficulty (string) - one of three difficulty levels selected by
+    the User.
+    Outputs: content (string) - paragraph with fill-in-the-blank answers
+    based on the difficulty level. answers (list, string) - the correct
+    answers to the content string.
+    """
 
     if difficulty == "easy":
         content = easyQuiz
@@ -137,10 +145,14 @@ def set_content(difficulty):
 
 # Checks to see if the answer given by the User is correct.
 def check_answer(answer, answers, answerCount):
-    """Returns True if the User's answer matches the correct answer.
-    Otherwise, it returns False"""
-
-    print # For readability
+    """
+    Returns True if the User's answer matches the correct answer.
+    Otherwise, it returns False
+    Inputs: answer (string) - the User's current guess.
+    answers (list, strings) - list of correct answers. answerCount (int) -
+    index of the current correct answer.
+    Outputs: True or False
+    """
 
     if answer == answers[answerCount]:
         return True
@@ -148,63 +160,72 @@ def check_answer(answer, answers, answerCount):
         return False
 
 
-# Checks if a word in paragraph is a substring of the numberStr passed in.
-def number_in_para(numberStr, paragraph):
-    """Returns a 'paragraph blank with number' if a given 'numberStr' is a
-    substring of paragraph. Otherwise, return 'None'."""
+def replace_blanks(answerCount, answer, guessesCount, content):
+    """
+    Replaces the numbered blanks in the quiz paragraph with the correct
+    answer given by the User.
+    Inputs: answerCount (int) - the answer number we are currently working on.
+    answer (string) -  The Users correct answer. guessesCount (int) - The
+    number of guesses made by the User. content (string) - The quiz paragraph.
+    Outputs: The modified answerCount, guessesCount and the content.
+    """
+    print "Whoop! Correct!\n"
 
-    numberStr = str(numberStr)
+    # Replace the blank(s) with the correct answer
+    numberBlank = "___" + str(answerCount + 1) + "___"
+    content = content.replace(numberBlank, answer)
 
-    for word in paragraph:
-        if numberStr in word:
-            return word
-    return None
+    # Clean up our variables
+    answerCount += 1
+    guessesCount = 0
+
+    return answerCount, guessesCount, content
 
 
-def replace_blanks(answerCount, answer, string_of_words):
-    """Replaces the current numbered blank(s) with the given correct
-    answer"""
+def wrong_answer(guessesCount, guesses):
+    """
+    Notifies the User of a wrong guess and increments the guessesCount.
+    Inputs: guessesCount (int) - the current number of guessess. guessess
+    (int) - the max allowed guesses as configured by the User during game
+    setup.
+    Outputs: guessesCount (int)
+    """
 
-    print # For readability
+    print "\nYikes! That answer is incorrect!"
 
-    replaced_string = []
+    guessesCount += 1
 
-    for word in string_of_words:
-        result = number_in_para(answerCount + 1, string_of_words)
+    print "You have " + str(guesses - guessesCount) + " left! Try again...\n"
 
-        if result != None:
-            word = word.replace(result, answer) # This will keep punctuation
-            replaced_string.append(word)
-        else:
-            replaced_string.append(word)
-
-    return replaced_string
+    return guessesCount
 
 
 def win_or_lose(guessesCount, guesses):
-    """Prints either a winning or losing message based on the inputs of
-    guessesCount and guesses"""
+    """
+    Prints either a winning or losing message based on the inputs of
+    guessesCount and guesses.
+    Inputs: guessesCount (int) - the current number of guesses the User is on.
+    guesses (int) - the max number of guesses configured during game setup.
+    Outputs: none.
+    """
 
     if guessesCount < guesses:
-        print # For readability
-        print
-        print "Winner, winner! Chicken dinner!"
+        print "\n\nWinner, winner! Chicken dinner!"
     else:
-        print
-        print
-        print "Ah, too bad. Try harder!"
+        print "\n\nAh, too bad. Try harder!"
 
     print "Seacrest Out!"
 
 
 # Play the Fill-in-the-Blanks Quiz game
 def play_game():
-    """Plays the Fill-in-the-Blanks Quiz game. This function does nothing
-    return a value."""
+    """
+    Plays the Fill-in-the-Blanks Quiz game. This function calls all the
+    necessary 'helper' functions to setup and play the game. This function
+    does not return a value.
+    """
 
-    answerCount = 0
-    guessesCount = 0
-    guessesLeft = 0
+    answerCount, guessesCount = 0, 0
 
     # Get the desired difficulty level from the User
     difficulty = get_difficulty()
@@ -214,9 +235,6 @@ def play_game():
 
     # Set the content based on the User's selected difficulty
     content, answers = set_content(difficulty)
-
-    # Split content into list of words
-    string_of_words = content.split()
 
     # While we haven't run out of guesses or answers
     while (guessesCount < guesses) and (answerCount < len(answers)):
@@ -230,28 +248,14 @@ def play_game():
         isCorrect = check_answer(answer, answers, answerCount)
 
         if isCorrect == True:
-            print "Whoop! Correct!"
-            print # For readability
 
-            # Replace the blank(s) with the correct answer
-            replaced_string = replace_blanks(answerCount, answer, string_of_words)
-
-            # Join the list of words back to a string
-            content = " ".join(replaced_string)
-            # Split the content back into a list for the next answer
-            string_of_words = content.split()
-            # Clean up our variables
-            answerCount += 1
-            guessesCount = 0
-            replaced_string = [] # Reset so we don't keep adding to the string
+            # Replace the numbered blank with the correct answer
+            answerCount, guessesCount, content = replace_blanks(answerCount, answer, guessesCount, content)
 
         else:
-            print
-            print "Yikes! That answer is incorrect!"
-            guessesCount += 1
-            guessesLeft = guesses - guessesCount
-            print "You have " + str(guessesLeft) + " left! Try again..."
-            print
+
+            # Increment the guessesCount and notify the User of a wrong guess
+            guessesCount = wrong_answer(guessesCount, guesses)
 
     # Print the final content
     print content
