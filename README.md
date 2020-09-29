@@ -84,7 +84,7 @@ Also, the `variables.tf` script contains a default port (80) to expose to the ex
 
 The script `output.tf` will print to the screen the public IP assigned during deployment.
 
-To deploy this infrastructure template with Terraform, execute the following command from the directory where the where the `*.tf` files are located:
+To deploy this infrastructure template with Terraform, execute the following command from the directory where the `*.tf` files are located:
 
 	terraform init
 
