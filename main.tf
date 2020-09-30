@@ -177,5 +177,6 @@ resource "azurerm_linux_virtual_machine" "main" {
   
   tags = {
     environment = var.tag
+    project = var.project_name
   }
 }

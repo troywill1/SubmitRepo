@@ -26,3 +26,8 @@ variable "application_port" {
     description = "The port that you want to expose to the external load balancer."
     default     = 80
 }
+
+variable "project_name" {
+    description = "The project name tag to be applied to the virtual machines."
+    default     = "webproject"
+}
